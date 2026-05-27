@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Конвертер единиц</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  /* ── Шрифты ─────────────────────────────────────────────── */
+  @import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  /* ── Токены — подхватываем цвета Telegram-темы ─────────── */
+  :root {
+    --bg:          var(--tg-theme-bg-color,          #0f0f13);
+    --bg2:         var(--tg-theme-secondary-bg-color, #1a1a22);
+    --text:        var(--tg-theme-text-color,         #f0f0f4);
+    --hint:        var(--tg-theme-hint-color,         #7b7b8f);
+    --accent:      var(--tg-theme-button-color,       #5b6fff);
+    --accent-text: var(--tg-theme-button-text-color,  #ffffff);
+    --border:      rgba(255,255,255,0.08);
+    --card:        rgba(255,255,255,0.04);
+    --card-hover:  rgba(255,255,255,0.08);
+    --result-bg:   rgba(91,111,255,0.12);
+    --result-border: rgba(91,111,255,0.35);
+    --radius:      16px;
+    --radius-sm:   10px;
+    --font:        'Onest', system-ui, sans-serif;
+    --mono:        'JetBrains Mono', monospace;
+    --transition:  0.18s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ── Reset ──────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { height: 100%; -webkit-tap-highlight-color: transparent; }
+  body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.5;
+    padding: env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,16px);
+    overscroll-behavior: none;
+  }
+
+  /* ── Шапка ──────────────────────────────────────────────── */
+  .header {
+    padding: 20px 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-icon {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(91,111,255,0.35);
+  }
+  .header-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-sub   { font-size: 12px; color: var(--hint); margin-top: 1px; }
+
+  /* ── Табы категорий ─────────────────────────────────────── */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--hint);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+  }
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-text);
+    box-shadow: 0 4px 14px rgba(91,111,255,0.4);
+  }
+  .tab:not(.active):hover { border-color: var(--accent); color: var(--text); }
+  .tab-icon { font-size: 15px; }
+
+  /* ── Секция с единицами ─────────────────────────────────── */
+  .section { padding: 16px 20px 0; }
+
+  /* ── Сетка кнопок единиц ────────────────────────────────── */
+  .units-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .unit-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 8px;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-family: var(--font);
+  }
+  .unit-btn:hover { background: var(--card-hover); border-color: var(--accent); }
+  .unit-btn.selected {
+    background: rgba(91,111,255,0.18);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(91,111,255,0.15);
+  }
+  .unit-btn .code {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .unit-btn .name {
+    font-size: 10px;
+    color: var(--hint);
+    line-height: 1.2;
+  }
+  .unit-btn.selected .code { color: var(--accent); }
+  .unit-btn.selected .name { color: rgba(91,111,255,0.8); }
+
+  /* ── Поле ввода ─────────────────────────────────────────── */
+  .input-row {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .input-wrap {
+    flex: 1;
+    position: relative;
+  }
+  .input-wrap input {
+    width: 100%;
+    height: 52px;
+    background: var(--bg2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0 48px 0 16px;
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    outline: none;
+    transition: border-color var(--transition);
+    -webkit-appearance: none;
+  }
+  .input-wrap input:focus { border-color: var(--accent); }
+  .input-wrap input::placeholder { color: var(--hint); font-weight: 400; font-size: 15px; }
+  .input-unit-badge {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(91,111,255,0.12);
+    border-radius: 6px;
+    padding: 2px 6px;
+    pointer-events: none;
+  }
+  .clear-btn {
+    width: 52px; height: 52px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--hint);
+    font-size: 18px;
+    cursor: pointer;
+    display: grid; place-items: center;
+    transition: all var(--transition);
+    flex-shrink: 0;
+  }
+  .clear-btn:hover { border-color: #ff5b5b; color: #ff5b5b; background: rgba(255,91,91,0.08); }
+
+  /* ── Блок результата ────────────────────────────────────── */
+  .result-block {
+    margin-top: 16px;
+    background: var(--result-bg);
+    border: 1.5px solid var(--result-border);
+    border-radius: var(--radius);
+    padding: 16px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    pointer-events: none;
+  }
+  .result-block.visible {
+    opacity: 1; transform: translateY(0); pointer-events: auto;
+  }
+  .result-label { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 8px; }
+  .result-main  { font-family: var(--mono); font-size: 22px; font-weight: 600; line-height: 1.3; }
+  .result-main .val { color: var(--text); }
+  .result-main .eq  { color: var(--hint); margin: 0 6px; }
+  .result-main .res { color: var(--accent); }
+  .result-also {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--hint);
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .also-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+  }
+  .copy-row { margin-top: 12px; display: flex; justify-content: flex-end; }
+  .copy-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 10px;
+    color: var(--hint); font-family: var(--font); font-size: 12px;
+    cursor: pointer; transition: all var(--transition);
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { border-color: #4cde80; color: #4cde80; }
+
+  /* ── Нет единицы / Подсказка ────────────────────────────── */
+  .hint-text {
+    margin-top: 12px;
+    text-align: center;
+    color: var(--hint);
+    font-size: 13px;
+    padding: 12px;
+    background: var(--card);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border);
+  }
+
+  /* ── Температура — спецблок ─────────────────────────────── */
+  .temp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .temp-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 10px;
+    text-align: center;
+    transition: border-color var(--transition);
+  }
+  .temp-card.highlight { border-color: var(--accent); background: rgba(91,111,255,0.10); }
+  .temp-card .tc-label { font-size: 10px; font-weight: 600; color: var(--hint); letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 6px; }
+  .temp-card .tc-val   { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--text); }
+  .temp-card.highlight .tc-val { color: var(--accent); }
+
+  /* ── Анимация смены таба ─────────────────────────────────── */
+  .tab-panel { animation: fadeIn 0.18s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── Нижний отступ ──────────────────────────────────────── */
+  .spacer { height: 32px; }
+</style>
+</head>
+<body>
+
+<!-- Шапка -->
+<div class="header">
+  <div class="header-icon">⇄</div>
+  <div>
+    <div class="header-title">Конвертер единиц</div>
+    <div class="header-sub">США ↔ Россия</div>
+  </div>
+</div>
+
+<!-- Табы -->
+<div class="tabs" id="tabs">
+  <button class="tab active" data-cat="distance"><span class="tab-icon">📏</span> Расстояние</button>
+  <button class="tab"        data-cat="weight">  <span class="tab-icon">⚖️</span> Вес</button>
+  <button class="tab"        data-cat="temp">    <span class="tab-icon">🌡</span> Температура</button>
+  <button class="tab"        data-cat="volume">  <span class="tab-icon">🧴</span> Объём</button>
+</div>
+
+<!-- Контент -->
+<div class="section" id="panel"></div>
+<div class="spacer"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  Telegram Web App init
+// ═══════════════════════════════════════════════════════════
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Данные
+// ═══════════════════════════════════════════════════════════
+const CATS = {
+  distance: {
+    label: 'Расстояние',
+    units: [
+      { code:'km',  label:'км',     name:'километр' },
+      { code:'m',   label:'м',      name:'метр' },
+      { code:'cm',  label:'см',     name:'сантиметр' },
+      { code:'mi',  label:'миля',   name:'миля' },
+      { code:'yd',  label:'ярд',    name:'ярд' },
+      { code:'ft',  label:'фут',    name:'фут' },
+      { code:'in',  label:'дюйм',   name:'дюйм' },
+    ],
+    convert(val, from) {
+      const toM = { km:1000, m:1, cm:0.01, mi:1609.344, yd:0.9144, ft:0.3048, in:0.0254 };
+      const names = { km:'км', m:'м', cm:'см', mi:'миль', yd:'ярдов', ft:'футов', in:'дюймов' };
+      const baseM = val * toM[from];
+      const pairs = [['km','mi'],['m','ft'],['cm','in'],['m','yd']];
+      let mainTo = null;
+      for (const [a,b] of pairs) {
+        if (from===a){mainTo=b;break;}
+        if (from===b){mainTo=a;break;}
+      }
+      const mainVal = mainTo ? baseM / toM[mainTo] : null;
+      const groups = { km:['km','mi','m'], m:['m','ft','yd'], cm:['cm','in'], mi:['km','mi','m'], ft:['m','ft','yd'], yd:['m','ft','yd'], in:['cm','in'] };
+      const extras = (groups[from]||[]).filter(u=>u!==from && u!==mainTo)
+        .map(u=>({ val: baseM/toM[u], unit: names[u] }));
+      return { mainVal, mainUnit: mainTo ? names[mainTo] : null, fromUnit: names[from], extras };
+    }
+  },
+  weight: {
+    label: 'Вес',
+    units: [
+      { code:'kg',  label:'кг',     name:'килограмм' },
+      { code:'g',   label:'г',      name:'грамм' },
+      { code:'t',   label:'т',      name:'тонна' },
+      { code:'lb',  label:'фунт',   name:'фунт' },
+      { code:'oz',  label:'унция',  name:'унция' },
+      { code:'st',  label:'стоун',  name:'стоун' },
+    ],
+    convert(val, from) {
+      const toG = { kg:1000, g:1, t:1e6, lb:453.59237, oz:28.3495, st:6350.293 };
+      const names = { kg:'кг', g:'г', t:'т', lb:'фунтов', oz:'унций', st:'стоунов' };
+      const baseG = val * toG[from];
+      const pairs = [['kg','lb'],['g','oz'],['t','lb'],['st','kg']];
+      let mainTo = null;
+      for (const [a,b] of pairs) {
+        if (from===a){mainTo=b;break;}
+        if (from===b){mainTo=a;break;}
+      }
+      const mainVal = mainTo ? baseG / toG[mainTo] : null;
+      const groups = { kg:['kg','lb','st'], lb:['kg','lb','st'], st:['kg','lb','st'], g:['g','oz'], oz:['g','oz'], t:['t','lb'] };
+      const extras = (groups[from]||[]).filter(u=>u!==from && u!==mainTo)
+        .map(u=>({ val: baseG/toG[u], unit: names[u] }));
+      return { mainVal, mainUnit: mainTo ? names[mainTo] : null, fromUnit: names[from], extras };
+    }
+  },
+  temp: {
+    label: 'Температура',
+    units: [
+      { code:'C', label:'°C', name:'Цельсий' },
+      { code:'F', label:'°F', name:'Фаренгейт' },
+      { code:'K', label:'K',  name:'Кельвин' },
+    ],
+    convert(val, from) {
+      let C, F, K;
+      if (from==='C'){ C=val; F=val*9/5+32; K=val+273.15; }
+      else if (from==='F'){ C=(val-32)*5/9; F=val; K=C+273.15; }
+      else { K=val; C=val-273.15; F=C*9/5+32; }
+      return { C, F, K };
+    }
+  },
+  volume: {
+    label: 'Объём',
+    units: [
+      { code:'l',    label:'л',     name:'литр' },
+      { code:'ml',   label:'мл',    name:'миллилитр' },
+      { code:'gal',  label:'гал',   name:'галлон (US)' },
+      { code:'pt',   label:'пинта', name:'пинта (US)' },
+      { code:'qt',   label:'кварта',name:'кварта (US)' },
+      { code:'floz', label:'fl oz', name:'жидк. унция' },
+    ],
+    convert(val, from) {
+      const toML = { l:1000, ml:1, gal:3785.41, pt:473.176, qt:946.353, floz:29.5735 };
+      const names = { l:'л', ml:'мл', gal:'гал', pt:'пинт', qt:'кварт', floz:'fl oz' };
+      const baseML = val * toML[from];
+      const pairs = [['l','gal'],['ml','floz'],['l','pt'],['l','qt']];
+      let mainTo = null;
+      for (const [a,b] of pairs) {
+        if (from===a){mainTo=b;break;}
+        if (from===b){mainTo=a;break;}
+      }
+      const mainVal = mainTo ? baseML / toML[mainTo] : null;
+      const bigUnits = ['l','gal','qt','pt'];
+      const smallUnits = ['ml','floz'];
+      const group = bigUnits.includes(from) ? bigUnits : smallUnits;
+      const extras = group.filter(u=>u!==from && u!==mainTo)
+        .map(u=>({ val: baseML/toML[u], unit: names[u] }));
+      return { mainVal, mainUnit: mainTo ? names[mainTo] : null, fromUnit: names[from], extras };
+    }
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+//  Форматирование числа
+// ═══════════════════════════════════════════════════════════
+function fmt(v) {
+  if (!isFinite(v)) return '—';
+  if (Math.abs(v) >= 1000) return v.toLocaleString('ru', {maximumFractionDigits:2});
+  if (Math.abs(v) >= 1)    return parseFloat(v.toFixed(4)).toString();
+  return parseFloat(v.toFixed(6)).toString();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Состояние
+// ═══════════════════════════════════════════════════════════
+let state = { cat: 'distance', unit: 'km', value: '' };
+
+// ═══════════════════════════════════════════════════════════
+//  Рендер
+// ═══════════════════════════════════════════════════════════
+function render() {
+  const panel = document.getElementById('panel');
+  const cat = CATS[state.cat];
+
+  if (state.cat === 'temp') {
+    renderTemp(panel, cat);
+  } else {
+    renderStandard(panel, cat);
+  }
+}
+
+function renderStandard(panel, cat) {
+  const units = cat.units;
+  const val = parseFloat(state.value);
+  const hasVal = state.value !== '' && !isNaN(val);
+
+  // Результат
+  let resultHTML = '';
+  if (hasVal && state.unit) {
+    const r = cat.convert(val, state.unit);
+    if (r.mainVal !== null) {
+      const extrasHTML = r.extras.length
+        ? `<div class="result-also">
+            <span style="color:var(--hint);font-size:11px;align-self:center">Также:</span>
+            ${r.extras.map(e => `<span class="also-chip">${fmt(e.val)} ${e.unit}</span>`).join('')}
+           </div>`
+        : '';
+      resultHTML = `
+        <div class="result-block visible" id="result-block">
+          <div class="result-label">Результат</div>
+          <div class="result-main">
+            <span class="val">${fmt(val)} ${r.fromUnit}</span>
+            <span class="eq">=</span>
+            <span class="res">${fmt(r.mainVal)} ${r.mainUnit}</span>
+          </div>
+          ${extrasHTML}
+          <div class="copy-row">
+            <button class="copy-btn" id="copy-btn" onclick="copyResult()">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6z"/>
+                <path d="M0 5a2 2 0 0 1 2-2h1v1H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5z"/>
+              </svg>
+              Скопировать
+            </button>
+          </div>
+        </div>`;
+    }
+  } else if (!state.unit) {
+    resultHTML = `<div class="hint-text">👆 Выбери единицу измерения</div>`;
+  }
+
+  panel.innerHTML = `<div class="tab-panel">
+    <div class="units-grid">
+      ${units.map(u => `
+        <button class="unit-btn ${state.unit===u.code?'selected':''}" onclick="selectUnit('${u.code}')">
+          <span class="code">${u.label}</span>
+          <span class="name">${u.name}</span>
+        </button>`).join('')}
+    </div>
+    <div class="input-row" style="margin-top:12px">
+      <div class="input-wrap">
+        <input id="num-input" type="number" inputmode="decimal"
+          placeholder="Введи число…"
+          value="${state.value}"
+          oninput="onInput(this.value)"
+          onfocus="this.select()">
+        ${state.unit ? `<span class="input-unit-badge">${units.find(u=>u.code===state.unit)?.label||''}</span>` : ''}
+      </div>
+      <button class="clear-btn" onclick="clearInput()" title="Очистить">✕</button>
+    </div>
+    ${resultHTML}
+  </div>`;
+
+  // Фокус на инпут если значение уже есть
+  if (state.value) {
+    const inp = document.getElementById('num-input');
+    if (inp) inp.focus();
+  }
+}
+
+function renderTemp(panel, cat) {
+  const val = parseFloat(state.value);
+  const hasVal = state.value !== '' && !isNaN(val);
+
+  let tempResultHTML = '';
+  if (hasVal && state.unit) {
+    const r = cat.convert(val, state.unit);
+    tempResultHTML = `
+      <div class="temp-grid">
+        <div class="temp-card ${state.unit==='C'?'highlight':''}">
+          <div class="tc-label">°C Цельсий</div>
+          <div class="tc-val">${fmt(r.C)}</div>
+        </div>
+        <div class="temp-card ${state.unit==='F'?'highlight':''}">
+          <div class="tc-label">°F Фаренгейт</div>
+          <div class="tc-val">${fmt(r.F)}</div>
+        </div>
+        <div class="temp-card ${state.unit==='K'?'highlight':''}">
+          <div class="tc-label">K Кельвин</div>
+          <div class="tc-val">${fmt(r.K)}</div>
+        </div>
+      </div>
+      <div class="copy-row" style="margin-top:10px">
+        <button class="copy-btn" id="copy-btn" onclick="copyTempResult(${fmt(r.C)}, ${fmt(r.F)}, ${fmt(r.K)})">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6z"/>
+            <path d="M0 5a2 2 0 0 1 2-2h1v1H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5z"/>
+          </svg>
+          Скопировать
+        </button>
+      </div>`;
+  }
+
+  panel.innerHTML = `<div class="tab-panel">
+    <div class="units-grid">
+      ${cat.units.map(u => `
+        <button class="unit-btn ${state.unit===u.code?'selected':''}" onclick="selectUnit('${u.code}')">
+          <span class="code">${u.label}</span>
+          <span class="name">${u.name}</span>
+        </button>`).join('')}
+    </div>
+    <div class="input-row" style="margin-top:12px">
+      <div class="input-wrap">
+        <input id="num-input" type="number" inputmode="decimal"
+          placeholder="Введи температуру…"
+          value="${state.value}"
+          oninput="onInput(this.value)"
+          onfocus="this.select()">
+        ${state.unit ? `<span class="input-unit-badge">${cat.units.find(u=>u.code===state.unit)?.label||''}</span>` : ''}
+      </div>
+      <button class="clear-btn" onclick="clearInput()" title="Очистить">✕</button>
+    </div>
+    ${tempResultHTML || (!state.unit ? `<div class="hint-text">👆 Выбери шкалу температуры</div>` : '')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Обработчики
+// ═══════════════════════════════════════════════════════════
+function selectCat(cat) {
+  const defaultUnit = { distance:'km', weight:'kg', temp:'C', volume:'l' };
+  state.cat = cat;
+  state.unit = defaultUnit[cat];
+  // значение сохраняем
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.cat === cat);
+  });
+  render();
+  tg?.HapticFeedback?.selectionChanged?.();
+}
+
+function selectUnit(code) {
+  state.unit = code;
+  render();
+  tg?.HapticFeedback?.selectionChanged?.();
+  // Фокус на инпут после выбора единицы
+  setTimeout(() => document.getElementById('num-input')?.focus(), 50);
+}
+
+function onInput(v) {
+  state.value = v;
+  render();
+}
+
+function clearInput() {
+  state.value = '';
+  render();
+  setTimeout(() => document.getElementById('num-input')?.focus(), 50);
+}
+
+function copyResult() {
+  const block = document.getElementById('result-block');
+  if (!block) return;
+  const main = block.querySelector('.result-main');
+  const text = main ? main.innerText : '';
+  navigator.clipboard?.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    if (btn) { btn.classList.add('copied'); btn.textContent = '✓ Скопировано'; }
+    setTimeout(() => render(), 1800);
+  });
+}
+
+function copyTempResult(C, F, K) {
+  const text = `${C} °C = ${F} °F = ${K} K`;
+  navigator.clipboard?.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    if (btn) { btn.classList.add('copied'); btn.textContent = '✓ Скопировано'; }
+    setTimeout(() => render(), 1800);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Инициализация табов
+// ═══════════════════════════════════════════════════════════
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab');
+  if (btn) selectCat(btn.dataset.cat);
+});
+
+// Первый рендер
+render();
+</script>
+</body>
+</html>
