@@ -9,21 +9,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
 :root {
-  --bg:           var(--tg-theme-bg-color,           #0f0f13);
-  --bg2:          var(--tg-theme-secondary-bg-color,  #1a1a22);
-  --text:         var(--tg-theme-text-color,          #f0f0f4);
-  --hint:         var(--tg-theme-hint-color,          #7b7b8f);
-  --accent:       var(--tg-theme-button-color,        #5b6fff);
-  --accent-text:  var(--tg-theme-button-text-color,   #ffffff);
-  --border:       rgba(255,255,255,0.08);
-  --card:         rgba(255,255,255,0.04);
-  --num-bg:       rgba(255,255,255,0.06);
-  --num-active:   rgba(91,111,255,0.22);
-  --radius:       16px;
-  --radius-sm:    10px;
-  --font:         'Onest', system-ui, sans-serif;
-  --mono:         'JetBrains Mono', monospace;
-  --tr:           0.15s cubic-bezier(0.4,0,0.2,1);
+  --bg:          var(--tg-theme-bg-color,          #0f0f13);
+  --bg2:         var(--tg-theme-secondary-bg-color, #1a1a22);
+  --text:        var(--tg-theme-text-color,         #f0f0f4);
+  --hint:        var(--tg-theme-hint-color,         #7b7b8f);
+  --accent:      var(--tg-theme-button-color,       #5b6fff);
+  --accent-text: var(--tg-theme-button-text-color,  #ffffff);
+  --border:      rgba(255,255,255,0.08);
+  --card:        rgba(255,255,255,0.04);
+  --num-bg:      rgba(255,255,255,0.06);
+  --num-active:  rgba(91,111,255,0.22);
+  --radius:      16px;
+  --radius-sm:   10px;
+  --font:        'Onest', system-ui, sans-serif;
+  --mono:        'JetBrains Mono', monospace;
+  --tr:          0.15s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Светлая тема */
+body.theme-light {
+  --bg:     #f2f2f7;
+  --bg2:    #ffffff;
+  --text:   #1c1c1e;
+  --hint:   #8e8e93;
+  --border: rgba(0,0,0,0.08);
+  --card:   rgba(0,0,0,0.03);
+  --num-bg: rgba(0,0,0,0.05);
+  --num-active: rgba(91,111,255,0.18);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,9 +48,10 @@ body {
   overscroll-behavior: none;
   padding-top: env(safe-area-inset-top,0);
   padding-bottom: env(safe-area-inset-bottom,0);
+  transition: background 0.2s, color 0.2s;
 }
 
-/* ── Шапка ─────────────────────────────────────────── */
+/* ── Шапка ──────────────────────────────────────────── */
 .header {
   padding: 14px 16px 0;
   display: flex; align-items: center; gap: 10px;
@@ -50,13 +63,27 @@ body {
   font-size: 18px; flex-shrink: 0;
   box-shadow: 0 3px 12px rgba(91,111,255,0.4);
 }
-.header-title { font-size: 16px; font-weight: 700; }
+.header-title { font-size: 16px; font-weight: 700; flex: 1; }
 .header-sub   { font-size: 11px; color: var(--hint); }
+
+/* Кнопки настроек в шапке */
+.header-controls { display: flex; gap: 6px; align-items: center; }
+.ctrl-btn {
+  height: 30px; padding: 0 10px;
+  border-radius: 8px; border: 1.5px solid var(--border);
+  background: var(--card); color: var(--hint);
+  font-family: var(--font); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all var(--tr);
+  display: flex; align-items: center; gap: 4px;
+  white-space: nowrap;
+}
+.ctrl-btn:active { border-color: var(--accent); color: var(--accent); }
+.ctrl-btn.active-setting { border-color: var(--accent); color: var(--accent); background: rgba(91,111,255,0.10); }
 
 /* ── Табы ───────────────────────────────────────────── */
 .tabs {
   display: flex; gap: 6px;
-  padding: 12px 16px 0;
+  padding: 10px 16px 0;
   overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
 }
 .tabs::-webkit-scrollbar { display: none; }
@@ -93,9 +120,7 @@ body {
   color: var(--text); display: flex; align-items: center; gap: 8px;
   flex: 1; min-width: 0; overflow: hidden;
 }
-.display-number .num-text {
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
+.display-number .num-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .display-number .cursor {
   display: inline-block; width: 2px; height: 30px;
   background: var(--accent); border-radius: 2px; flex-shrink: 0;
@@ -110,27 +135,17 @@ body {
 }
 
 /* ── Результат ──────────────────────────────────────── */
-.result-zone {
-  display: none; margin-top: 10px; padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
+.result-zone { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
 .result-zone.visible { display: block; }
-.result-main {
-  font-family: var(--mono); font-size: 17px; font-weight: 600;
-  color: var(--accent); line-height: 1.4;
-}
+.result-main { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--accent); line-height: 1.4; }
 .result-eq { color: var(--hint); margin: 0 5px; font-weight: 400; }
-.result-also {
-  display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px;
-}
+.result-also { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
 .also-chip {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 6px; padding: 2px 7px;
   font-family: var(--mono); font-size: 11px; color: var(--hint);
 }
-.result-actions {
-  display: flex; gap: 7px; margin-top: 10px;
-}
+.result-actions { display: flex; gap: 7px; margin-top: 10px; }
 .ra-btn {
   flex: 1; padding: 8px 0; border-radius: var(--radius-sm);
   border: 1.5px solid var(--border); background: var(--card);
@@ -141,8 +156,6 @@ body {
 .ra-btn.save-btn { color: var(--accent); border-color: rgba(91,111,255,0.3); }
 .ra-btn.save-btn:active { background: rgba(91,111,255,0.12); }
 .ra-btn.copy-btn-inline:active { border-color: var(--accent); color: var(--accent); }
-.ra-btn.saved { color: #4cde80; border-color: #4cde80; }
-.ra-btn.copied-flash { color: var(--accent); border-color: var(--accent); }
 
 /* ── Температура ────────────────────────────────────── */
 .temp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
@@ -176,51 +189,37 @@ body {
 .unit-btn .name { font-size: 9.5px; color: var(--hint); }
 .unit-btn.selected .code { color: var(--accent); }
 
+/* Разделитель групп единиц */
+.units-divider {
+  grid-column: 1 / -1;
+  height: 1px; background: var(--border); margin: 2px 0;
+}
+
 /* ── История ────────────────────────────────────────── */
 .history-section { margin-top: 14px; }
-.history-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 7px;
-}
-.history-label {
-  font-size: 11px; font-weight: 600; color: var(--hint);
-  letter-spacing: 0.5px; text-transform: uppercase;
-}
-.history-clear {
-  font-size: 11px; color: var(--hint); background: none; border: none;
-  cursor: pointer; padding: 2px 0; font-family: var(--font);
-}
+.history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
+.history-label { font-size: 11px; font-weight: 600; color: var(--hint); letter-spacing: 0.5px; text-transform: uppercase; }
+.history-clear { font-size: 11px; color: var(--hint); background: none; border: none; cursor: pointer; padding: 2px 0; font-family: var(--font); }
 .history-clear:active { color: #ff6b6b; }
 .history-list { display: flex; flex-direction: column; gap: 5px; }
 .history-item {
   display: flex; align-items: center; justify-content: space-between;
   background: var(--card); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 9px 12px;
-  cursor: pointer; transition: all var(--tr);
-  gap: 8px;
+  cursor: pointer; transition: all var(--tr); gap: 8px;
 }
 .history-item:active { border-color: var(--accent); background: rgba(91,111,255,0.08); }
-.history-text {
-  font-family: var(--mono); font-size: 13px; color: var(--text);
-  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.history-del {
-  font-size: 15px; color: var(--hint); background: none; border: none;
-  cursor: pointer; padding: 0 2px; line-height: 1; flex-shrink: 0;
-}
+.history-text { font-family: var(--mono); font-size: 13px; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-del { font-size: 15px; color: var(--hint); background: none; border: none; cursor: pointer; padding: 0 2px; line-height: 1; flex-shrink: 0; }
 .history-del:active { color: #ff6b6b; }
-.history-empty {
-  font-size: 12px; color: var(--hint); text-align: center;
-  padding: 12px; font-style: italic;
-}
+.history-empty { font-size: 12px; color: var(--hint); text-align: center; padding: 12px; font-style: italic; }
 
-/* ── Toast уведомление ──────────────────────────────── */
+/* ── Toast ──────────────────────────────────────────── */
 .toast {
   position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(10px);
-  background: rgba(30,30,50,0.96); color: var(--text);
+  background: rgba(30,30,50,0.96); color: #f0f0f4;
   padding: 9px 18px; border-radius: 100px;
-  font-size: 13px; font-weight: 500;
-  border: 1px solid var(--border);
+  font-size: 13px; font-weight: 500; border: 1px solid rgba(255,255,255,0.1);
   opacity: 0; transition: opacity 0.2s, transform 0.2s;
   pointer-events: none; white-space: nowrap; z-index: 100;
   backdrop-filter: blur(8px);
@@ -240,12 +239,12 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .np-btn:active { background: var(--num-active); transform: scale(0.93); }
-.np-btn.np-action { background: rgba(91,111,255,0.12); color: var(--accent); font-size: 22px; font-family: var(--font); }
+.np-btn.np-action { background: rgba(91,111,255,0.12); color: var(--accent); font-size: 14px; font-family: var(--font); }
 .np-btn.np-action:active { background: rgba(91,111,255,0.28); }
 .np-btn.np-zero { grid-column: span 2; }
 .np-btn.np-clear { background: rgba(255,80,80,0.10); color: #ff6b6b; font-size: 14px; font-family: var(--font); }
 .np-btn.np-clear:active { background: rgba(255,80,80,0.25); }
-.np-btn.np-back { color: var(--hint); font-size: 26px; line-height:1; }
+.np-btn.np-back { color: var(--hint); }
 
 .tab-panel { animation: fadeIn 0.15s ease; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:none} }
@@ -255,19 +254,17 @@ body {
 
 <div class="header">
   <div class="header-icon">⇄</div>
-  <div>
-    <div class="header-title">Конвертер единиц</div>
-    <div class="header-sub">США ↔ Россия</div>
+  <div style="flex:1">
+    <div class="header-title" id="header-title">Конвертер единиц</div>
+    <div class="header-sub" id="header-sub">США ↔ Россия</div>
+  </div>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="btn-lang" onclick="toggleLang()">EN</button>
+    <button class="ctrl-btn" id="btn-theme" onclick="toggleTheme()">☀️</button>
   </div>
 </div>
 
-<div class="tabs" id="tabs">
-  <button class="tab active" data-cat="distance">📏 Расстояние</button>
-  <button class="tab"        data-cat="weight">⚖️ Вес</button>
-  <button class="tab"        data-cat="temp">🌡 Температура</button>
-  <button class="tab"        data-cat="volume">🧴 Объём</button>
-</div>
-
+<div class="tabs" id="tabs"></div>
 <div class="scroll-area" id="panel"></div>
 
 <div class="numpad">
@@ -281,12 +278,12 @@ body {
     <button class="np-btn" data-val="5">5</button>
     <button class="np-btn" data-val="6">6</button>
     <button class="np-btn np-back" id="np-back">
-  <svg width="26" height="20" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M10 2H24C25.1 2 26 2.9 26 4V16C26 17.1 25.1 18 24 18H10L2 10L10 2Z" stroke="currentColor" stroke-width="1.8" fill="none"/>
-    <line x1="14" y1="7" x2="21" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-    <line x1="21" y1="7" x2="14" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-  </svg>
-</button>
+      <svg width="26" height="20" viewBox="0 0 26 20" fill="none">
+        <path d="M10 2H24C25.1 2 26 2.9 26 4V16C26 17.1 25.1 18 24 18H10L2 10L10 2Z" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <line x1="14" y1="7" x2="21" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="21" y1="7" x2="14" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
 
     <button class="np-btn" data-val="1">1</button>
     <button class="np-btn" data-val="2">2</button>
@@ -297,11 +294,11 @@ body {
     <button class="np-btn np-zero" data-val="0">0</button>
     <button class="np-btn" data-val=".">.</button>
     <button class="np-btn np-action" id="np-copy">
-  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="7" y="7" width="12" height="13" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
-    <path d="M5 15H4C2.9 15 2 14.1 2 13V4C2 2.9 2.9 2 4 2H13C14.1 2 15 2.9 15 4V5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-  </svg>
-</button>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect x="7" y="7" width="12" height="13" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        <path d="M5 15H4C2.9 15 2 14.1 2 13V4C2 2.9 2.9 2 4 2H13C14.1 2 15 2.9 15 4V5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+      </svg>
+    </button>
   </div>
 </div>
 
@@ -311,56 +308,120 @@ body {
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
+// ── Локализация ──────────────────────────────────────────────
+let lang = 'ru';
+
+const I18N = {
+  ru: {
+    appTitle:    'Конвертер единиц',
+    appSub:      'США ↔ Россия',
+    placeholder: 'Введите число',
+    unitLabel:   'Единица измерения',
+    histLabel:   'История',
+    histEmpty:   'Нет сохранённых значений',
+    histClear:   'Очистить',
+    copy:        'Скопировать',
+    save:        '📌 Сохранить',
+    saved:       '📌 Сохранено',
+    copied:      'Скопировано ✓',
+    tabs: { distance:'📏 Расстояние', weight:'⚖️ Вес', temp:'🌡 Температура', volume:'🧴 Объём' },
+  },
+  en: {
+    appTitle:    'Unit Converter',
+    appSub:      'USA ↔ Russia',
+    placeholder: 'Enter number',
+    unitLabel:   'Unit',
+    histLabel:   'History',
+    histEmpty:   'No saved values',
+    histClear:   'Clear',
+    copy:        'Copy',
+    save:        '📌 Save',
+    saved:       '📌 Saved',
+    copied:      'Copied ✓',
+    tabs: { distance:'📏 Distance', weight:'⚖️ Weight', temp:'🌡 Temperature', volume:'🧴 Volume' },
+  }
+};
+const t = () => I18N[lang];
+
+// ── Тема ─────────────────────────────────────────────────────
+let theme = 'dark';
+function toggleTheme() {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  applyTheme();
+}
+function applyTheme() {
+  document.body.classList.toggle('theme-light', theme === 'light');
+  document.getElementById('btn-theme').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+function toggleLang() {
+  lang = lang === 'ru' ? 'en' : 'ru';
+  document.getElementById('btn-lang').textContent = lang === 'ru' ? 'EN' : 'RU';
+  document.getElementById('header-title').textContent = t().appTitle;
+  document.getElementById('header-sub').textContent   = t().appSub;
+  // Обновить табы
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.textContent = t().tabs[tab.dataset.cat] || tab.textContent;
+  });
+  render();
+}
+
 // ── Данные ───────────────────────────────────────────────────
+// Порядок: сначала американские, потом российские
 const CATS = {
   distance: {
+    // us = американские, ru = российские
     units: [
-      {code:'km',label:'км',   name:'километр'},
-      {code:'m', label:'м',    name:'метр'},
-      {code:'cm',label:'см',   name:'сантиметр'},
-      {code:'mi',label:'миля', name:'миля'},
-      {code:'yd',label:'ярд',  name:'ярд'},
-      {code:'ft',label:'фут',  name:'фут'},
-      {code:'in',label:'дюйм', name:'дюйм'},
+      {code:'mi', label:'mi',   name:{ru:'миля',   en:'mile'},   us:true},
+      {code:'ft', label:'ft',   name:{ru:'фут',    en:'foot'},   us:true},
+      {code:'in', label:'in',   name:{ru:'дюйм',   en:'inch'},   us:true},
+      {code:'yd', label:'yd',   name:{ru:'ярд',    en:'yard'},   us:true},
+      {code:'km', label:'км',   name:{ru:'километр',en:'km'},    us:false},
+      {code:'m',  label:'м',    name:{ru:'метр',   en:'meter'},  us:false},
+      {code:'cm', label:'см',   name:{ru:'сантиметр',en:'cm'},   us:false},
     ],
     convert(val,from){
       const M={km:1000,m:1,cm:0.01,mi:1609.344,yd:0.9144,ft:0.3048,in:0.0254};
-      const N={km:'км',m:'м',cm:'см',mi:'миль',yd:'ярдов',ft:'футов',in:'дюймов'};
+      const N={km:'км',m:'м',cm:'см',mi:'mi',yd:'yd',ft:'ft',in:'in'};
+      const Ne={km:'km',m:'m',cm:'cm',mi:'mi',yd:'yd',ft:'ft',in:'in'};
       const base=val*M[from];
-      const pairs=[['km','mi'],['m','ft'],['cm','in'],['m','yd']];
+      const pairs=[['mi','km'],['ft','m'],['in','cm'],['yd','m']];
       let to=null; for(const[a,b]of pairs){if(from===a){to=b;break;}if(from===b){to=a;break;}}
       const mainVal=to?base/M[to]:null;
-      const g={km:['km','mi','m'],mi:['km','mi','m'],m:['m','ft','yd'],ft:['m','ft','yd'],yd:['m','ft','yd'],cm:['cm','in'],in:['cm','in']};
-      const extras=(g[from]||[]).filter(u=>u!==from&&u!==to).map(u=>({val:base/M[u],unit:N[u]}));
-      return{mainVal,mainUnit:to?N[to]:null,fromUnit:N[from],extras};
+      const g={mi:['mi','km'],km:['mi','km'],ft:['ft','m','yd'],m:['ft','m','yd'],yd:['ft','m','yd'],in:['in','cm'],cm:['in','cm']};
+      const extras=(g[from]||[]).filter(u=>u!==from&&u!==to).map(u=>({val:base/M[u],unit:lang==='en'?Ne[u]:N[u]}));
+      const nn = lang==='en'?Ne:N;
+      return{mainVal,mainUnit:to?nn[to]:null,fromUnit:nn[from],extras};
     }
   },
   weight: {
     units: [
-      {code:'kg',label:'кг',   name:'килограмм'},
-      {code:'g', label:'г',    name:'грамм'},
-      {code:'t', label:'т',    name:'тонна'},
-      {code:'lb',label:'фунт', name:'фунт'},
-      {code:'oz',label:'унция',name:'унция'},
-      {code:'st',label:'стоун',name:'стоун'},
+      {code:'lb', label:'lb',   name:{ru:'фунт',   en:'pound'},  us:true},
+      {code:'oz', label:'oz',   name:{ru:'унция',  en:'ounce'},  us:true},
+      {code:'st', label:'st',   name:{ru:'стоун',  en:'stone'},  us:true},
+      {code:'kg', label:'кг',   name:{ru:'килограмм',en:'kg'},   us:false},
+      {code:'g',  label:'г',    name:{ru:'грамм',  en:'gram'},   us:false},
+      {code:'t',  label:'т',    name:{ru:'тонна',  en:'tonne'},  us:false},
     ],
     convert(val,from){
       const G={kg:1000,g:1,t:1e6,lb:453.592,oz:28.3495,st:6350.29};
-      const N={kg:'кг',g:'г',t:'т',lb:'фунтов',oz:'унций',st:'стоунов'};
+      const N={kg:'кг',g:'г',t:'т',lb:'lb',oz:'oz',st:'st'};
+      const Ne={kg:'kg',g:'g',t:'t',lb:'lb',oz:'oz',st:'st'};
       const base=val*G[from];
-      const pairs=[['kg','lb'],['g','oz'],['t','lb'],['st','kg']];
+      const pairs=[['lb','kg'],['oz','g'],['st','kg']];
       let to=null; for(const[a,b]of pairs){if(from===a){to=b;break;}if(from===b){to=a;break;}}
       const mainVal=to?base/G[to]:null;
-      const g={kg:['kg','lb','st'],lb:['kg','lb','st'],st:['kg','lb','st'],g:['g','oz'],oz:['g','oz'],t:['t','lb']};
-      const extras=(g[from]||[]).filter(u=>u!==from&&u!==to).map(u=>({val:base/G[u],unit:N[u]}));
-      return{mainVal,mainUnit:to?N[to]:null,fromUnit:N[from],extras};
+      const g2={kg:['lb','kg','st'],lb:['lb','kg','st'],st:['lb','kg','st'],g:['oz','g'],oz:['oz','g'],t:['t','lb']};
+      const nn=lang==='en'?Ne:N;
+      const extras=(g2[from]||[]).filter(u=>u!==from&&u!==to).map(u=>({val:base/G[u],unit:nn[u]}));
+      return{mainVal,mainUnit:to?nn[to]:null,fromUnit:nn[from],extras};
     }
   },
   temp: {
     units: [
-      {code:'C',label:'°C',name:'Цельсий'},
-      {code:'F',label:'°F',name:'Фаренгейт'},
-      {code:'K',label:'K', name:'Кельвин'},
+      {code:'F', label:'°F', name:{ru:'Фаренгейт',en:'Fahrenheit'}, us:true},
+      {code:'C', label:'°C', name:{ru:'Цельсий',  en:'Celsius'},    us:false},
+      {code:'K', label:'K',  name:{ru:'Кельвин',  en:'Kelvin'},     us:false},
     ],
     convert(val,from){
       let C,F,K;
@@ -372,24 +433,26 @@ const CATS = {
   },
   volume: {
     units: [
-      {code:'l',   label:'л',    name:'литр'},
-      {code:'ml',  label:'мл',   name:'миллилитр'},
-      {code:'gal', label:'гал',  name:'галлон (US)'},
-      {code:'pt',  label:'пинта',name:'пинта (US)'},
-      {code:'qt',  label:'кварта',name:'кварта (US)'},
-      {code:'floz',label:'fl oz',name:'жидк. унция'},
+      {code:'gal', label:'gal',  name:{ru:'галлон (US)',en:'gallon'},   us:true},
+      {code:'pt',  label:'pt',   name:{ru:'пинта (US)', en:'pint'},     us:true},
+      {code:'qt',  label:'qt',   name:{ru:'кварта (US)',en:'quart'},    us:true},
+      {code:'floz',label:'fl oz',name:{ru:'жидк. унция',en:'fl oz'},    us:true},
+      {code:'l',   label:'л',    name:{ru:'литр',       en:'liter'},    us:false},
+      {code:'ml',  label:'мл',   name:{ru:'миллилитр',  en:'ml'},       us:false},
     ],
     convert(val,from){
       const ML={l:1000,ml:1,gal:3785.41,pt:473.176,qt:946.353,floz:29.5735};
-      const N={l:'л',ml:'мл',gal:'гал',pt:'пинт',qt:'кварт',floz:'fl oz'};
+      const N={l:'л',ml:'мл',gal:'gal',pt:'pt',qt:'qt',floz:'fl oz'};
+      const Ne={l:'l',ml:'ml',gal:'gal',pt:'pt',qt:'qt',floz:'fl oz'};
       const base=val*ML[from];
-      const pairs=[['l','gal'],['ml','floz'],['l','pt'],['l','qt']];
+      const pairs=[['gal','l'],['floz','ml'],['pt','l'],['qt','l']];
       let to=null; for(const[a,b]of pairs){if(from===a){to=b;break;}if(from===b){to=a;break;}}
       const mainVal=to?base/ML[to]:null;
-      const big=['l','gal','qt','pt'],small=['ml','floz'];
+      const big=['gal','qt','pt','l'],small=['floz','ml'];
       const group=big.includes(from)?big:small;
-      const extras=group.filter(u=>u!==from&&u!==to).map(u=>({val:base/ML[u],unit:N[u]}));
-      return{mainVal,mainUnit:to?N[to]:null,fromUnit:N[from],extras};
+      const nn=lang==='en'?Ne:N;
+      const extras=group.filter(u=>u!==from&&u!==to).map(u=>({val:base/ML[u],unit:nn[u]}));
+      return{mainVal,mainUnit:to?nn[to]:null,fromUnit:nn[from],extras};
     }
   }
 };
@@ -402,13 +465,19 @@ function fmt(v){
 }
 
 // ── Состояние ────────────────────────────────────────────────
-const DEF={distance:'km',weight:'kg',temp:'C',volume:'l'};
-let state={cat:'distance',unit:'km',raw:''};
+const DEF={distance:'mi',weight:'lb',temp:'F',volume:'gal'};
+let state={cat:'distance',unit:'mi',raw:''};
+let history=[];
+const HISTORY_MAX=5;
 
-// ── История — хранится в памяти (до 5 записей) ───────────────
-let history = [];
-const HISTORY_MAX = 5;
+// ── Сброс после действия ─────────────────────────────────────
+function resetInput(){
+  state.raw='';
+  updateDisplay();
+  updateResult();
+}
 
+// ── История ──────────────────────────────────────────────────
 function currentResultText(){
   const val=parseFloat(state.raw);
   if(!state.raw||isNaN(val))return null;
@@ -425,35 +494,26 @@ function currentResultText(){
 function saveToHistory(){
   const text=currentResultText();
   if(!text)return;
-  // Не дублируем одинаковые
   if(history[0]===text)return;
   history=history.filter(h=>h!==text);
   history.unshift(text);
   if(history.length>HISTORY_MAX)history=history.slice(0,HISTORY_MAX);
   renderHistory();
-  showToast('📌 Сохранено');
+  showToast(t().saved);
   tg?.HapticFeedback?.notificationOccurred?.('success');
+  resetInput(); // сброс после сохранения
 }
 
-function deleteHistory(idx){
-  history.splice(idx,1);
-  renderHistory();
-}
-
-function clearHistory(){
-  history=[];
-  renderHistory();
-}
+function deleteHistory(idx){ history.splice(idx,1); renderHistory(); }
+function clearHistory(){ history=[]; renderHistory(); }
 
 function renderHistory(){
   const sec=document.getElementById('history-section');
   if(!sec)return;
   if(history.length===0){
     sec.innerHTML=`
-      <div class="history-header">
-        <span class="history-label">История</span>
-      </div>
-      <div class="history-empty">Нет сохранённых значений</div>`;
+      <div class="history-header"><span class="history-label">${t().histLabel}</span></div>
+      <div class="history-empty">${t().histEmpty}</div>`;
     return;
   }
   const items=history.map((h,i)=>`
@@ -463,24 +523,24 @@ function renderHistory(){
     </div>`).join('');
   sec.innerHTML=`
     <div class="history-header">
-      <span class="history-label">История (${history.length})</span>
-      <button class="history-clear" onclick="clearHistory()">Очистить</button>
+      <span class="history-label">${t().histLabel} (${history.length})</span>
+      <button class="history-clear" onclick="clearHistory()">${t().histClear}</button>
     </div>
     <div class="history-list">${items}</div>`;
 }
 
 function copyHistoryItem(idx){
-  navigator.clipboard?.writeText(history[idx]).then(()=>showToast('Скопировано ✓'));
+  navigator.clipboard?.writeText(history[idx]).then(()=>showToast(t().copied));
   tg?.HapticFeedback?.impactOccurred?.('medium');
 }
 
 // ── Toast ────────────────────────────────────────────────────
 let toastTimer=null;
 function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
   if(toastTimer)clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),1800);
 }
 
 // ── Нумпад ───────────────────────────────────────────────────
@@ -491,55 +551,42 @@ function numpadPress(key){
   else if(key==='clear') r='';
   else if(key==='neg')   r=r.startsWith('-')?r.slice(1):(r?'-'+r:'');
   else if(key==='.'){    if(!r.includes('.'))r+=(r===''||r==='-')?'0.':'.';}
-  else { if(r==='0')r=key; else if(r==='-0')r='-'+key; else r+=key; }
+  else{ if(r==='0')r=key; else if(r==='-0')r='-'+key; else r+=key; }
   state.raw=r;
   updateDisplay();
   updateResult();
 }
 
-// ── Показать/скрыть +/− в зависимости от категории ──────────
 function updateNegBtn(){
-  const btn=document.getElementById('np-neg');
-  const saveBtn=document.getElementById('np-save');
-  if(!btn)return;
-  if(state.cat==='temp'){
-    btn.style.display='grid';
-    saveBtn.style.display='none';
-  } else {
-    btn.style.display='none';
-    saveBtn.style.display='grid';
-  }
+  const neg=document.getElementById('np-neg');
+  const save=document.getElementById('np-save');
+  if(!neg)return;
+  if(state.cat==='temp'){ neg.style.display='grid'; save.style.display='none'; }
+  else                  { neg.style.display='none';  save.style.display='grid'; }
 }
 
-// ── Обновить только дисплей ───────────────────────────────────
+// ── Дисплей ──────────────────────────────────────────────────
 function updateDisplay(){
   const el=document.getElementById('display-val');
   const badge=document.getElementById('display-badge');
   if(!el)return;
   const unitObj=CATS[state.cat].units.find(u=>u.code===state.unit);
-  if(state.raw===''){
-    el.innerHTML=`<span class="display-placeholder">Введите число</span>`;
-  } else {
-    el.innerHTML=`<span class="num-text">${state.raw}</span>`;
-  }
-  el.innerHTML+=`<span class="cursor"></span>`;
+  el.innerHTML = state.raw===''
+    ? `<span class="display-placeholder">${t().placeholder}</span><span class="cursor"></span>`
+    : `<span class="num-text">${state.raw}</span><span class="cursor"></span>`;
   if(badge)badge.textContent=unitObj?unitObj.label:'';
 }
 
-// ── Обновить только результат ─────────────────────────────────
+// ── Результат ────────────────────────────────────────────────
 function updateResult(){
   const res=document.getElementById('result-zone');
   if(!res)return;
   const val=parseFloat(state.raw);
-  if(!state.raw||isNaN(val)){
-    res.classList.remove('visible');
-    res.innerHTML='';
-    return;
-  }
+  if(!state.raw||isNaN(val)){ res.classList.remove('visible'); res.innerHTML=''; return; }
   const cat=CATS[state.cat];
   if(state.cat==='temp'){
     const r=cat.convert(val,state.unit);
-    const cards=['C','F','K'].map(u=>`
+    const cards=['F','C','K'].map(u=>`
       <div class="temp-card ${state.unit===u?'highlight':''}">
         <div class="tc-label">${u==='C'?'°C':u==='F'?'°F':'K'}</div>
         <div class="tc-val">${fmt(r[u])}</div>
@@ -547,11 +594,11 @@ function updateResult(){
     res.innerHTML=`
       <div class="temp-grid">${cards}</div>
       <div class="result-actions" style="margin-top:10px">
-        <button class="ra-btn copy-btn-inline" onclick="copyResultInline()">Скопировать</button>
+        <button class="ra-btn copy-btn-inline" onclick="copyResultInline()">${t().copy}</button>
       </div>`;
   } else {
     const r=cat.convert(val,state.unit);
-    if(r.mainVal===null){res.classList.remove('visible');return;}
+    if(r.mainVal===null){ res.classList.remove('visible'); return; }
     const extrasHTML=r.extras.length
       ?`<div class="result-also">${r.extras.map(e=>`<span class="also-chip">${fmt(e.val)} ${e.unit}</span>`).join('')}</div>`:'';
     res.innerHTML=`
@@ -560,8 +607,8 @@ function updateResult(){
       </div>
       ${extrasHTML}
       <div class="result-actions">
-        <button class="ra-btn copy-btn-inline" onclick="copyResultInline()">Скопировать</button>
-        <button class="ra-btn save-btn" onclick="saveToHistory()">📌 Сохранить</button>
+        <button class="ra-btn copy-btn-inline" onclick="copyResultInline()">${t().copy}</button>
+        <button class="ra-btn save-btn" onclick="saveToHistory()">${t().save}</button>
       </div>`;
   }
   res.classList.add('visible');
@@ -570,19 +617,27 @@ function updateResult(){
 function copyResultInline(){
   const text=currentResultText();
   if(!text)return;
-  navigator.clipboard?.writeText(text).then(()=>showToast('Скопировано ✓'));
+  navigator.clipboard?.writeText(text).then(()=>showToast(t().copied));
   tg?.HapticFeedback?.notificationOccurred?.('success');
+  resetInput(); // сброс после копирования
 }
 
-// ── Полный рендер (только при смене таба/единицы) ─────────────
+// ── Рендер панели ────────────────────────────────────────────
 function render(){
   const panel=document.getElementById('panel');
   const cat=CATS[state.cat];
-  const unitsHTML=cat.units.map(u=>`
+
+  // Единицы: сначала американские, потом российские — с разделителем
+  const usUnits  = cat.units.filter(u=>u.us);
+  const ruUnits  = cat.units.filter(u=>!u.us);
+  const makeBtn  = u => `
     <button class="unit-btn ${state.unit===u.code?'selected':''}" onclick="selectUnit('${u.code}')">
       <span class="code">${u.label}</span>
-      <span class="name">${u.name}</span>
-    </button>`).join('');
+      <span class="name">${u.name[lang]}</span>
+    </button>`;
+  const divider  = usUnits.length&&ruUnits.length ? '<div class="units-divider"></div>' : '';
+  const unitsHTML= usUnits.map(makeBtn).join('') + divider + ruUnits.map(makeBtn).join('');
+
   panel.innerHTML=`<div class="tab-panel">
     <div class="display">
       <div class="display-top">
@@ -591,14 +646,22 @@ function render(){
       </div>
       <div class="result-zone" id="result-zone"></div>
     </div>
-    <div class="units-label">Единица измерения</div>
+    <div class="units-label">${t().unitLabel}</div>
     <div class="units-grid">${unitsHTML}</div>
     <div class="history-section" id="history-section"></div>
   </div>`;
+
   updateNegBtn();
   updateDisplay();
   updateResult();
   renderHistory();
+}
+
+function renderTabs(){
+  const tabs=document.getElementById('tabs');
+  tabs.innerHTML=Object.keys(CATS).map(cat=>`
+    <button class="tab ${state.cat===cat?'active':''}" data-cat="${cat}">${t().tabs[cat]}</button>`
+  ).join('');
 }
 
 function selectUnit(code){
@@ -608,15 +671,12 @@ function selectUnit(code){
     const u=CATS[state.cat].units.find(u=>u.label===lbl);
     if(u)btn.classList.toggle('selected',u.code===code);
   });
-  updateDisplay();
-  updateResult();
+  updateDisplay(); updateResult();
   tg?.HapticFeedback?.selectionChanged?.();
 }
 
 function selectCat(cat){
-  state.cat=cat;
-  state.unit=DEF[cat];
-  state.raw='';
+  state.cat=cat; state.unit=DEF[cat]; state.raw='';
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===cat));
   render();
   tg?.HapticFeedback?.selectionChanged?.();
@@ -637,12 +697,17 @@ document.getElementById('numpad-grid').addEventListener('click',e=>{
   else if(btn.id==='np-save')  saveToHistory();
   else if(btn.id==='np-copy'){
     const text=currentResultText();
-    if(text)navigator.clipboard?.writeText(text).then(()=>showToast('Скопировано ✓'));
-    tg?.HapticFeedback?.notificationOccurred?.('success');
+    if(text){
+      navigator.clipboard?.writeText(text).then(()=>showToast(t().copied));
+      tg?.HapticFeedback?.notificationOccurred?.('success');
+      resetInput();
+    }
   }
-  else if(btn.dataset.val)     numpadPress(btn.dataset.val);
+  else if(btn.dataset.val) numpadPress(btn.dataset.val);
 });
 
+// ── Инициализация ─────────────────────────────────────────────
+renderTabs();
 render();
 </script>
 </body>
