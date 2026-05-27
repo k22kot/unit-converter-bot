@@ -2,7 +2,7 @@
 
 Telegram-бот + Mini App для быстрой конвертации единиц измерения.
 
-🔗 **Mini App:** https://k22kot.github.io/unit-converter-bot/mini_app/  
+🔗 **Mini App:** https://k22kot.github.io/unit-converter-bot
 🤖 **Бот:** @conv_usru_bot
 
 ---
