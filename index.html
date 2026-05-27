@@ -15,7 +15,7 @@
   --hint:        var(--tg-theme-hint-color,         #7b7b8f);
   --accent:      var(--tg-theme-button-color,       #5b6fff);
   --accent-text: var(--tg-theme-button-text-color,  #ffffff);
-  --border:      rgba(255,255,255,0.08);
+  --border:      rgba(255,255,255,0.08); /* переопределяется JS в applyTheme() */
   --card:        rgba(255,255,255,0.04);
   --num-bg:      rgba(255,255,255,0.06);
   --num-active:  rgba(91,111,255,0.22);
@@ -32,7 +32,7 @@ body.theme-light {
   --bg2:    #ffffff;
   --text:   #1c1c1e;
   --hint:   #8e8e93;
-  --border: rgba(0,0,0,0.08);
+  /* --border задаётся через JS на основе темы Telegram */
   --card:   rgba(0,0,0,0.03);
   --num-bg: rgba(0,0,0,0.05);
   --num-active: rgba(91,111,255,0.18);
@@ -350,8 +350,35 @@ function toggleTheme() {
   applyTheme();
 }
 function applyTheme() {
-  document.body.classList.toggle('theme-light', theme === 'light');
-  document.getElementById('btn-theme').textContent = theme === 'dark' ? '☀️' : '🌙';
+  const isLight = theme === 'light';
+  document.body.classList.toggle('theme-light', isLight);
+  document.getElementById('btn-theme').textContent = isLight ? '🌙' : '☀️';
+
+  // Граница: на светлом фоне нужна тёмная непрозрачная обводка,
+  // на тёмном — светлая полупрозрачная.
+  // Берём реальный bg-цвет из Telegram если доступен, иначе смотрим на тему.
+  let border;
+  const tgBg = tg?.themeParams?.bg_color || null;
+  if (tgBg) {
+    // Парсим яркость HEX-цвета (#rrggbb)
+    const hex = tgBg.replace('#','');
+    const r = parseInt(hex.slice(0,2),16);
+    const g = parseInt(hex.slice(2,4),16);
+    const b = parseInt(hex.slice(4,6),16);
+    const luminance = (0.299*r + 0.587*g + 0.114*b) / 255;
+    border = luminance > 0.5
+      ? 'rgba(0,0,0,0.13)'        // светлый фон — тёмная видимая граница
+      : 'rgba(255,255,255,0.10)'; // тёмный фон  — светлая полупрозрачная
+  } else {
+    border = isLight ? 'rgba(0,0,0,0.13)' : 'rgba(255,255,255,0.10)';
+  }
+  document.documentElement.style.setProperty('--border', border);
+
+  // card тоже адаптируем
+  const card = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)';
+  document.documentElement.style.setProperty('--card', card);
+  const numBg = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+  document.documentElement.style.setProperty('--num-bg', numBg);
 }
 
 function toggleLang() {
@@ -707,6 +734,14 @@ document.getElementById('numpad-grid').addEventListener('click',e=>{
 });
 
 // ── Инициализация ─────────────────────────────────────────────
+// Автоопределение темы из Telegram
+if (tg?.colorScheme) {
+  theme = tg.colorScheme; // 'light' или 'dark'
+} else {
+  // Фолбэк: смотрим на системную тему браузера
+  theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+}
+applyTheme();
 renderTabs();
 render();
 </script>
