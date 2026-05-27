@@ -17,9 +17,6 @@
   --accent-text:  var(--tg-theme-button-text-color,   #ffffff);
   --border:       rgba(255,255,255,0.08);
   --card:         rgba(255,255,255,0.04);
-  --card-hover:   rgba(255,255,255,0.09);
-  --result-bg:    rgba(91,111,255,0.10);
-  --result-border:rgba(91,111,255,0.30);
   --num-bg:       rgba(255,255,255,0.06);
   --num-active:   rgba(91,111,255,0.22);
   --radius:       16px;
@@ -32,280 +29,224 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
 body {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 15px;
+  display: flex; flex-direction: column;
+  background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 15px;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
-  padding-top: env(safe-area-inset-top, 0);
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-top: env(safe-area-inset-top,0);
+  padding-bottom: env(safe-area-inset-bottom,0);
 }
 
-/* ── Шапка ────────────────────────────────────────────── */
+/* ── Шапка ─────────────────────────────────────────── */
 .header {
   padding: 14px 16px 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: flex; align-items: center; gap: 10px;
   flex-shrink: 0;
 }
 .header-icon {
-  width: 36px; height: 36px;
-  background: var(--accent);
-  border-radius: 10px;
-  display: grid; place-items: center;
-  font-size: 18px;
-  flex-shrink: 0;
+  width: 36px; height: 36px; background: var(--accent);
+  border-radius: 10px; display: grid; place-items: center;
+  font-size: 18px; flex-shrink: 0;
   box-shadow: 0 3px 12px rgba(91,111,255,0.4);
 }
 .header-title { font-size: 16px; font-weight: 700; }
 .header-sub   { font-size: 11px; color: var(--hint); }
 
-/* ── Табы ────────────────────────────────────────────── */
+/* ── Табы ───────────────────────────────────────────── */
 .tabs {
-  display: flex;
-  gap: 6px;
+  display: flex; gap: 6px;
   padding: 12px 16px 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  flex-shrink: 0;
+  overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
 }
 .tabs::-webkit-scrollbar { display: none; }
 .tab {
-  flex-shrink: 0;
-  display: flex; align-items: center; gap: 5px;
-  padding: 7px 13px;
-  border-radius: 100px;
-  border: 1.5px solid var(--border);
-  background: transparent;
-  color: var(--hint);
-  font-family: var(--font);
-  font-size: 12.5px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--tr);
-  white-space: nowrap;
+  flex-shrink: 0; display: flex; align-items: center; gap: 5px;
+  padding: 7px 13px; border-radius: 100px;
+  border: 1.5px solid var(--border); background: transparent;
+  color: var(--hint); font-family: var(--font); font-size: 12.5px;
+  font-weight: 500; cursor: pointer; transition: all var(--tr); white-space: nowrap;
 }
 .tab.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-text);
-  box-shadow: 0 3px 12px rgba(91,111,255,0.4);
+  background: var(--accent); border-color: var(--accent);
+  color: var(--accent-text); box-shadow: 0 3px 12px rgba(91,111,255,0.4);
 }
 
-/* ── Основной скролл-контент ─────────────────────────── */
+/* ── Скролл-зона ────────────────────────────────────── */
 .scroll-area {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 12px 16px 8px;
-  scrollbar-width: none;
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 12px 16px 8px; scrollbar-width: none;
 }
 .scroll-area::-webkit-scrollbar { display: none; }
 
-/* ── Дисплей ─────────────────────────────────────────── */
+/* ── Дисплей ────────────────────────────────────────── */
 .display {
-  background: var(--bg2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  min-height: 64px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  background: var(--bg2); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px;
 }
-.display-input {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.2;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 34px;
+.display-top {
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: 40px;
 }
-.display-input .unit-badge {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--accent);
-  background: rgba(91,111,255,0.13);
-  border-radius: 6px;
-  padding: 2px 8px;
-  align-self: flex-end;
-  margin-bottom: 3px;
+.display-number {
+  font-family: var(--mono); font-size: 30px; font-weight: 600;
+  color: var(--text); display: flex; align-items: center; gap: 8px;
+  flex: 1; min-width: 0; overflow: hidden;
 }
-.display-input .cursor {
-  display: inline-block;
-  width: 2px; height: 28px;
-  background: var(--accent);
-  border-radius: 2px;
+.display-number .num-text {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.display-number .cursor {
+  display: inline-block; width: 2px; height: 30px;
+  background: var(--accent); border-radius: 2px; flex-shrink: 0;
   animation: blink 1s step-end infinite;
-  vertical-align: middle;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-.display-placeholder {
-  font-size: 15px;
-  color: var(--hint);
+.display-placeholder { font-size: 15px; color: var(--hint); font-family: var(--font); }
+.unit-badge {
+  font-size: 13px; font-weight: 500; color: var(--accent);
+  background: rgba(91,111,255,0.13); border-radius: 6px;
+  padding: 3px 9px; flex-shrink: 0; margin-left: 8px;
 }
 
-/* ── Результат под дисплеем ──────────────────────────── */
-.result-inline {
-  margin-top: 8px;
-  padding-top: 10px;
+/* ── Результат ──────────────────────────────────────── */
+.result-zone {
+  display: none; margin-top: 10px; padding-top: 10px;
   border-top: 1px solid var(--border);
-  display: none;
 }
-.result-inline.visible { display: block; }
+.result-zone.visible { display: block; }
 .result-main {
-  font-family: var(--mono);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--accent);
-  line-height: 1.4;
+  font-family: var(--mono); font-size: 17px; font-weight: 600;
+  color: var(--accent); line-height: 1.4;
 }
 .result-eq { color: var(--hint); margin: 0 5px; font-weight: 400; }
 .result-also {
-  margin-top: 6px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
+  display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px;
 }
 .also-chip {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 2px 7px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--hint);
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 2px 7px;
+  font-family: var(--mono); font-size: 11px; color: var(--hint);
 }
+.result-actions {
+  display: flex; gap: 7px; margin-top: 10px;
+}
+.ra-btn {
+  flex: 1; padding: 8px 0; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border); background: var(--card);
+  font-family: var(--font); font-size: 12px; font-weight: 500;
+  color: var(--hint); cursor: pointer; transition: all var(--tr);
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.ra-btn.save-btn { color: var(--accent); border-color: rgba(91,111,255,0.3); }
+.ra-btn.save-btn:active { background: rgba(91,111,255,0.12); }
+.ra-btn.copy-btn-inline:active { border-color: var(--accent); color: var(--accent); }
+.ra-btn.saved { color: #4cde80; border-color: #4cde80; }
+.ra-btn.copied-flash { color: var(--accent); border-color: var(--accent); }
 
-/* ── Сетка единиц ────────────────────────────────────── */
+/* ── Температура ────────────────────────────────────── */
+.temp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.temp-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 11px 6px; text-align: center;
+}
+.temp-card.highlight { border-color: var(--accent); background: rgba(91,111,255,0.10); }
+.tc-label { font-size: 9px; font-weight: 600; color: var(--hint); text-transform: uppercase; margin-bottom: 4px; }
+.tc-val   { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--text); }
+.temp-card.highlight .tc-val { color: var(--accent); }
+
+/* ── Единицы ────────────────────────────────────────── */
 .units-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--hint);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-bottom: 7px;
+  font-size: 11px; font-weight: 600; color: var(--hint);
+  letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 7px;
 }
 .units-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 6px;
-  margin-bottom: 4px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(80px,1fr));
+  gap: 6px; margin-bottom: 4px;
 }
 .unit-btn {
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 9px 6px;
-  cursor: pointer;
-  transition: all var(--tr);
-  text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  font-family: var(--font);
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 9px 6px;
+  cursor: pointer; transition: all var(--tr);
+  text-align: center; display: flex; flex-direction: column;
+  align-items: center; gap: 2px; font-family: var(--font);
 }
-.unit-btn.selected {
-  background: rgba(91,111,255,0.16);
-  border-color: var(--accent);
-}
-.unit-btn .code {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-}
+.unit-btn.selected { background: rgba(91,111,255,0.16); border-color: var(--accent); }
+.unit-btn .code { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--text); }
 .unit-btn .name { font-size: 9.5px; color: var(--hint); }
 .unit-btn.selected .code { color: var(--accent); }
 
-/* ── Температура карточки ────────────────────────────── */
-.temp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-.temp-card {
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 8px;
-  text-align: center;
-  transition: border-color var(--tr);
+/* ── История ────────────────────────────────────────── */
+.history-section { margin-top: 14px; }
+.history-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 7px;
 }
-.temp-card.highlight { border-color: var(--accent); background: rgba(91,111,255,0.10); }
-.temp-card .tc-label { font-size: 9.5px; font-weight: 600; color: var(--hint); text-transform: uppercase; margin-bottom: 5px; }
-.temp-card .tc-val   { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--text); }
-.temp-card.highlight .tc-val { color: var(--accent); }
+.history-label {
+  font-size: 11px; font-weight: 600; color: var(--hint);
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.history-clear {
+  font-size: 11px; color: var(--hint); background: none; border: none;
+  cursor: pointer; padding: 2px 0; font-family: var(--font);
+}
+.history-clear:active { color: #ff6b6b; }
+.history-list { display: flex; flex-direction: column; gap: 5px; }
+.history-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 9px 12px;
+  cursor: pointer; transition: all var(--tr);
+  gap: 8px;
+}
+.history-item:active { border-color: var(--accent); background: rgba(91,111,255,0.08); }
+.history-text {
+  font-family: var(--mono); font-size: 13px; color: var(--text);
+  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.history-del {
+  font-size: 15px; color: var(--hint); background: none; border: none;
+  cursor: pointer; padding: 0 2px; line-height: 1; flex-shrink: 0;
+}
+.history-del:active { color: #ff6b6b; }
+.history-empty {
+  font-size: 12px; color: var(--hint); text-align: center;
+  padding: 12px; font-style: italic;
+}
 
-/* ── Нумпад ──────────────────────────────────────────── */
-.numpad {
-  flex-shrink: 0;
-  padding: 0 16px 12px;
-  background: var(--bg);
+/* ── Toast уведомление ──────────────────────────────── */
+.toast {
+  position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(10px);
+  background: rgba(30,30,50,0.96); color: var(--text);
+  padding: 9px 18px; border-radius: 100px;
+  font-size: 13px; font-weight: 500;
+  border: 1px solid var(--border);
+  opacity: 0; transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none; white-space: nowrap; z-index: 100;
+  backdrop-filter: blur(8px);
 }
-.numpad-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Нумпад ─────────────────────────────────────────── */
+.numpad { flex-shrink: 0; padding: 0 16px 12px; background: var(--bg); }
+.numpad-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; }
 .np-btn {
-  background: var(--num-bg);
-  border: none;
-  border-radius: var(--radius-sm);
-  height: 52px;
-  font-family: var(--mono);
-  font-size: 19px;
-  font-weight: 600;
-  color: var(--text);
-  cursor: pointer;
+  background: var(--num-bg); border: none;
+  border-radius: var(--radius-sm); height: 52px;
+  font-family: var(--mono); font-size: 19px; font-weight: 600;
+  color: var(--text); cursor: pointer;
   transition: background var(--tr), transform 0.08s;
   display: grid; place-items: center;
   -webkit-tap-highlight-color: transparent;
 }
-.np-btn:active { background: var(--num-active); transform: scale(0.94); }
-.np-btn.np-action {
-  background: rgba(91,111,255,0.12);
-  color: var(--accent);
-  font-size: 15px;
-}
+.np-btn:active { background: var(--num-active); transform: scale(0.93); }
+.np-btn.np-action { background: rgba(91,111,255,0.12); color: var(--accent); font-size: 22px; font-family: var(--font); }
 .np-btn.np-action:active { background: rgba(91,111,255,0.28); }
 .np-btn.np-zero { grid-column: span 2; }
-.np-btn.np-clear {
-  background: rgba(255,80,80,0.10);
-  color: #ff6b6b;
-  font-size: 15px;
-}
+.np-btn.np-clear { background: rgba(255,80,80,0.10); color: #ff6b6b; font-size: 14px; font-family: var(--font); }
 .np-btn.np-clear:active { background: rgba(255,80,80,0.25); }
-.np-btn.np-back {
-  background: var(--num-bg);
-  color: var(--hint);
-  font-size: 20px;
-}
+.np-btn.np-back { color: var(--hint); font-size: 26px; line-height:1; }
 
-/* ── Копирование ─────────────────────────────────────── */
-.copy-row { display: flex; justify-content: flex-end; margin-top: 8px; }
-.copy-btn {
-  display: flex; align-items: center; gap: 4px;
-  background: none; border: 1px solid var(--border);
-  border-radius: 8px; padding: 5px 11px;
-  color: var(--hint); font-family: var(--font); font-size: 12px;
-  cursor: pointer; transition: all var(--tr);
-}
-.copy-btn:active { border-color: var(--accent); color: var(--accent); }
-.copy-btn.copied { border-color: #4cde80; color: #4cde80; }
-
-.hint-text {
-  text-align: center;
-  color: var(--hint);
-  font-size: 13px;
-  padding: 14px;
-  background: var(--card);
-  border-radius: var(--radius-sm);
-  border: 1px dashed var(--border);
-  margin-top: 8px;
-}
 .tab-panel { animation: fadeIn 0.15s ease; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:none} }
 </style>
@@ -321,307 +262,384 @@ body {
 </div>
 
 <div class="tabs" id="tabs">
-  <button class="tab active" data-cat="distance"><span>📏</span> Расстояние</button>
-  <button class="tab"        data-cat="weight">  <span>⚖️</span> Вес</button>
-  <button class="tab"        data-cat="temp">    <span>🌡</span> Температура</button>
-  <button class="tab"        data-cat="volume">  <span>🧴</span> Объём</button>
+  <button class="tab active" data-cat="distance">📏 Расстояние</button>
+  <button class="tab"        data-cat="weight">⚖️ Вес</button>
+  <button class="tab"        data-cat="temp">🌡 Температура</button>
+  <button class="tab"        data-cat="volume">🧴 Объём</button>
 </div>
 
 <div class="scroll-area" id="panel"></div>
 
-<!-- Нумпад — всегда внизу, не скроллится -->
 <div class="numpad">
-  <div class="numpad-grid">
+  <div class="numpad-grid" id="numpad-grid">
     <button class="np-btn" data-val="7">7</button>
     <button class="np-btn" data-val="8">8</button>
     <button class="np-btn" data-val="9">9</button>
-    <button class="np-btn np-action np-clear" id="np-clear">AC</button>
+    <button class="np-btn np-clear" id="np-clear">AC</button>
 
     <button class="np-btn" data-val="4">4</button>
     <button class="np-btn" data-val="5">5</button>
     <button class="np-btn" data-val="6">6</button>
-    <button class="np-btn np-back" id="np-back">⌫</button>
+    <button class="np-btn np-back" id="np-back">
+  <svg width="26" height="20" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 2H24C25.1 2 26 2.9 26 4V16C26 17.1 25.1 18 24 18H10L2 10L10 2Z" stroke="currentColor" stroke-width="1.8" fill="none"/>
+    <line x1="14" y1="7" x2="21" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="21" y1="7" x2="14" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>
+</button>
 
     <button class="np-btn" data-val="1">1</button>
     <button class="np-btn" data-val="2">2</button>
     <button class="np-btn" data-val="3">3</button>
-    <button class="np-btn np-action" id="np-neg">+/−</button>
+    <button class="np-btn np-action" id="np-neg" style="display:none">+/−</button>
+    <button class="np-btn np-action" id="np-save">📌</button>
 
     <button class="np-btn np-zero" data-val="0">0</button>
     <button class="np-btn" data-val=".">.</button>
-    <button class="np-btn np-action" id="np-copy">⎘</button>
+    <button class="np-btn np-action" id="np-copy">
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="7" y="7" width="12" height="13" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
+    <path d="M5 15H4C2.9 15 2 14.1 2 13V4C2 2.9 2.9 2 4 2H13C14.1 2 15 2.9 15 4V5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  </svg>
+</button>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
-// ── Данные ────────────────────────────────────────────────────
+// ── Данные ───────────────────────────────────────────────────
 const CATS = {
   distance: {
     units: [
-      {code:'km', label:'км',    name:'километр'},
-      {code:'m',  label:'м',     name:'метр'},
-      {code:'cm', label:'см',    name:'сантиметр'},
-      {code:'mi', label:'миля',  name:'миля'},
-      {code:'yd', label:'ярд',   name:'ярд'},
-      {code:'ft', label:'фут',   name:'фут'},
-      {code:'in', label:'дюйм',  name:'дюйм'},
+      {code:'km',label:'км',   name:'километр'},
+      {code:'m', label:'м',    name:'метр'},
+      {code:'cm',label:'см',   name:'сантиметр'},
+      {code:'mi',label:'миля', name:'миля'},
+      {code:'yd',label:'ярд',  name:'ярд'},
+      {code:'ft',label:'фут',  name:'фут'},
+      {code:'in',label:'дюйм', name:'дюйм'},
     ],
-    convert(val, from) {
-      const M = {km:1000,m:1,cm:0.01,mi:1609.344,yd:0.9144,ft:0.3048,in:0.0254};
-      const N = {km:'км',m:'м',cm:'см',mi:'миль',yd:'ярдов',ft:'футов',in:'дюймов'};
-      const base = val * M[from];
-      const pairs = [['km','mi'],['m','ft'],['cm','in'],['m','yd']];
-      let to = null;
-      for(const[a,b]of pairs){if(from===a){to=b;break;}if(from===b){to=a;break;}}
-      const mainVal = to ? base/M[to] : null;
-      const groups = {km:['km','mi','m'],mi:['km','mi','m'],m:['m','ft','yd'],ft:['m','ft','yd'],yd:['m','ft','yd'],cm:['cm','in'],in:['cm','in']};
-      const extras = (groups[from]||[]).filter(u=>u!==from&&u!==to).map(u=>({val:base/M[u],unit:N[u]}));
-      return {mainVal, mainUnit: to?N[to]:null, fromUnit:N[from], extras};
+    convert(val,from){
+      const M={km:1000,m:1,cm:0.01,mi:1609.344,yd:0.9144,ft:0.3048,in:0.0254};
+      const N={km:'км',m:'м',cm:'см',mi:'миль',yd:'ярдов',ft:'футов',in:'дюймов'};
+      const base=val*M[from];
+      const pairs=[['km','mi'],['m','ft'],['cm','in'],['m','yd']];
+      let to=null; for(const[a,b]of pairs){if(from===a){to=b;break;}if(from===b){to=a;break;}}
+      const mainVal=to?base/M[to]:null;
+      const g={km:['km','mi','m'],mi:['km','mi','m'],m:['m','ft','yd'],ft:['m','ft','yd'],yd:['m','ft','yd'],cm:['cm','in'],in:['cm','in']};
+      const extras=(g[from]||[]).filter(u=>u!==from&&u!==to).map(u=>({val:base/M[u],unit:N[u]}));
+      return{mainVal,mainUnit:to?N[to]:null,fromUnit:N[from],extras};
     }
   },
   weight: {
     units: [
-      {code:'kg', label:'кг',    name:'килограмм'},
-      {code:'g',  label:'г',     name:'грамм'},
-      {code:'t',  label:'т',     name:'тонна'},
-      {code:'lb', label:'фунт',  name:'фунт'},
-      {code:'oz', label:'унция', name:'унция'},
-      {code:'st', label:'стоун', name:'стоун'},
+      {code:'kg',label:'кг',   name:'килограмм'},
+      {code:'g', label:'г',    name:'грамм'},
+      {code:'t', label:'т',    name:'тонна'},
+      {code:'lb',label:'фунт', name:'фунт'},
+      {code:'oz',label:'унция',name:'унция'},
+      {code:'st',label:'стоун',name:'стоун'},
     ],
-    convert(val, from) {
-      const G = {kg:1000,g:1,t:1e6,lb:453.592,oz:28.3495,st:6350.29};
-      const N = {kg:'кг',g:'г',t:'т',lb:'фунтов',oz:'унций',st:'стоунов'};
-      const base = val * G[from];
-      const pairs = [['kg','lb'],['g','oz'],['t','lb'],['st','kg']];
-      let to = null;
-      for(const[a,b]of pairs){if(from===a){to=b;break;}if(from===b){to=a;break;}}
-      const mainVal = to ? base/G[to] : null;
-      const groups = {kg:['kg','lb','st'],lb:['kg','lb','st'],st:['kg','lb','st'],g:['g','oz'],oz:['g','oz'],t:['t','lb']};
-      const extras = (groups[from]||[]).filter(u=>u!==from&&u!==to).map(u=>({val:base/G[u],unit:N[u]}));
-      return {mainVal, mainUnit:to?N[to]:null, fromUnit:N[from], extras};
+    convert(val,from){
+      const G={kg:1000,g:1,t:1e6,lb:453.592,oz:28.3495,st:6350.29};
+      const N={kg:'кг',g:'г',t:'т',lb:'фунтов',oz:'унций',st:'стоунов'};
+      const base=val*G[from];
+      const pairs=[['kg','lb'],['g','oz'],['t','lb'],['st','kg']];
+      let to=null; for(const[a,b]of pairs){if(from===a){to=b;break;}if(from===b){to=a;break;}}
+      const mainVal=to?base/G[to]:null;
+      const g={kg:['kg','lb','st'],lb:['kg','lb','st'],st:['kg','lb','st'],g:['g','oz'],oz:['g','oz'],t:['t','lb']};
+      const extras=(g[from]||[]).filter(u=>u!==from&&u!==to).map(u=>({val:base/G[u],unit:N[u]}));
+      return{mainVal,mainUnit:to?N[to]:null,fromUnit:N[from],extras};
     }
   },
   temp: {
     units: [
-      {code:'C', label:'°C', name:'Цельсий'},
-      {code:'F', label:'°F', name:'Фаренгейт'},
-      {code:'K', label:'K',  name:'Кельвин'},
+      {code:'C',label:'°C',name:'Цельсий'},
+      {code:'F',label:'°F',name:'Фаренгейт'},
+      {code:'K',label:'K', name:'Кельвин'},
     ],
-    convert(val, from) {
+    convert(val,from){
       let C,F,K;
       if(from==='C'){C=val;F=val*9/5+32;K=val+273.15;}
       else if(from==='F'){C=(val-32)*5/9;F=val;K=C+273.15;}
       else{K=val;C=val-273.15;F=C*9/5+32;}
-      return {C,F,K};
+      return{C,F,K};
     }
   },
   volume: {
     units: [
-      {code:'l',   label:'л',     name:'литр'},
-      {code:'ml',  label:'мл',    name:'миллилитр'},
-      {code:'gal', label:'гал',   name:'галлон (US)'},
-      {code:'pt',  label:'пинта', name:'пинта (US)'},
+      {code:'l',   label:'л',    name:'литр'},
+      {code:'ml',  label:'мл',   name:'миллилитр'},
+      {code:'gal', label:'гал',  name:'галлон (US)'},
+      {code:'pt',  label:'пинта',name:'пинта (US)'},
       {code:'qt',  label:'кварта',name:'кварта (US)'},
-      {code:'floz',label:'fl oz', name:'жидк. унция'},
+      {code:'floz',label:'fl oz',name:'жидк. унция'},
     ],
-    convert(val, from) {
-      const ML = {l:1000,ml:1,gal:3785.41,pt:473.176,qt:946.353,floz:29.5735};
-      const N  = {l:'л',ml:'мл',gal:'гал',pt:'пинт',qt:'кварт',floz:'fl oz'};
-      const base = val * ML[from];
-      const pairs = [['l','gal'],['ml','floz'],['l','pt'],['l','qt']];
-      let to = null;
-      for(const[a,b]of pairs){if(from===a){to=b;break;}if(from===b){to=a;break;}}
-      const mainVal = to ? base/ML[to] : null;
-      const big=['l','gal','qt','pt'], small=['ml','floz'];
-      const group = big.includes(from)?big:small;
-      const extras = group.filter(u=>u!==from&&u!==to).map(u=>({val:base/ML[u],unit:N[u]}));
-      return {mainVal, mainUnit:to?N[to]:null, fromUnit:N[from], extras};
+    convert(val,from){
+      const ML={l:1000,ml:1,gal:3785.41,pt:473.176,qt:946.353,floz:29.5735};
+      const N={l:'л',ml:'мл',gal:'гал',pt:'пинт',qt:'кварт',floz:'fl oz'};
+      const base=val*ML[from];
+      const pairs=[['l','gal'],['ml','floz'],['l','pt'],['l','qt']];
+      let to=null; for(const[a,b]of pairs){if(from===a){to=b;break;}if(from===b){to=a;break;}}
+      const mainVal=to?base/ML[to]:null;
+      const big=['l','gal','qt','pt'],small=['ml','floz'];
+      const group=big.includes(from)?big:small;
+      const extras=group.filter(u=>u!==from&&u!==to).map(u=>({val:base/ML[u],unit:N[u]}));
+      return{mainVal,mainUnit:to?N[to]:null,fromUnit:N[from],extras};
     }
   }
 };
 
-// ── Форматирование ────────────────────────────────────────────
-function fmt(v) {
-  if(!isFinite(v)) return '—';
-  if(Math.abs(v)>=10000) return v.toLocaleString('ru',{maximumFractionDigits:2});
-  if(Math.abs(v)>=1)     return parseFloat(v.toFixed(4)).toString();
+function fmt(v){
+  if(!isFinite(v))return'—';
+  if(Math.abs(v)>=10000)return v.toLocaleString('ru',{maximumFractionDigits:2});
+  if(Math.abs(v)>=1)return parseFloat(v.toFixed(4)).toString();
   return parseFloat(v.toFixed(6)).toString();
 }
 
-// ── Состояние ─────────────────────────────────────────────────
-const DEF = {distance:'km', weight:'kg', temp:'C', volume:'l'};
-let state = {cat:'distance', unit:'km', raw:''};
+// ── Состояние ────────────────────────────────────────────────
+const DEF={distance:'km',weight:'kg',temp:'C',volume:'l'};
+let state={cat:'distance',unit:'km',raw:''};
 
-// ── Нумпад: обновляем только дисплей и результат, не весь DOM ─
-function numpadPress(key) {
-  tg?.HapticFeedback?.impactOccurred?.('light');
-  let r = state.raw;
-  if(key === 'back') {
-    r = r.slice(0,-1);
-  } else if(key === 'clear') {
-    r = '';
-  } else if(key === 'neg') {
-    r = r.startsWith('-') ? r.slice(1) : (r ? '-'+r : '');
-  } else if(key === '.') {
-    if(!r.includes('.')) r += (r===''||r==='-') ? '0.' : '.';
-  } else {
-    if(r === '0') r = key;
-    else if(r === '-0') r = '-'+key;
-    else r += key;
+// ── История — хранится в памяти (до 5 записей) ───────────────
+let history = [];
+const HISTORY_MAX = 5;
+
+function currentResultText(){
+  const val=parseFloat(state.raw);
+  if(!state.raw||isNaN(val))return null;
+  const cat=CATS[state.cat];
+  if(state.cat==='temp'){
+    const r=cat.convert(val,state.unit);
+    return `${fmt(val)} ${cat.units.find(u=>u.code===state.unit)?.label} → ${fmt(r.C)}°C / ${fmt(r.F)}°F / ${fmt(r.K)}K`;
   }
-  state.raw = r;
+  const r=cat.convert(val,state.unit);
+  if(r.mainVal===null)return null;
+  return `${fmt(val)} ${r.fromUnit} = ${fmt(r.mainVal)} ${r.mainUnit}`;
+}
+
+function saveToHistory(){
+  const text=currentResultText();
+  if(!text)return;
+  // Не дублируем одинаковые
+  if(history[0]===text)return;
+  history=history.filter(h=>h!==text);
+  history.unshift(text);
+  if(history.length>HISTORY_MAX)history=history.slice(0,HISTORY_MAX);
+  renderHistory();
+  showToast('📌 Сохранено');
+  tg?.HapticFeedback?.notificationOccurred?.('success');
+}
+
+function deleteHistory(idx){
+  history.splice(idx,1);
+  renderHistory();
+}
+
+function clearHistory(){
+  history=[];
+  renderHistory();
+}
+
+function renderHistory(){
+  const sec=document.getElementById('history-section');
+  if(!sec)return;
+  if(history.length===0){
+    sec.innerHTML=`
+      <div class="history-header">
+        <span class="history-label">История</span>
+      </div>
+      <div class="history-empty">Нет сохранённых значений</div>`;
+    return;
+  }
+  const items=history.map((h,i)=>`
+    <div class="history-item" onclick="copyHistoryItem(${i})">
+      <span class="history-text">${h}</span>
+      <button class="history-del" onclick="event.stopPropagation();deleteHistory(${i})">✕</button>
+    </div>`).join('');
+  sec.innerHTML=`
+    <div class="history-header">
+      <span class="history-label">История (${history.length})</span>
+      <button class="history-clear" onclick="clearHistory()">Очистить</button>
+    </div>
+    <div class="history-list">${items}</div>`;
+}
+
+function copyHistoryItem(idx){
+  navigator.clipboard?.writeText(history[idx]).then(()=>showToast('Скопировано ✓'));
+  tg?.HapticFeedback?.impactOccurred?.('medium');
+}
+
+// ── Toast ────────────────────────────────────────────────────
+let toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+// ── Нумпад ───────────────────────────────────────────────────
+function numpadPress(key){
+  tg?.HapticFeedback?.impactOccurred?.('light');
+  let r=state.raw;
+  if(key==='back')       r=r.slice(0,-1);
+  else if(key==='clear') r='';
+  else if(key==='neg')   r=r.startsWith('-')?r.slice(1):(r?'-'+r:'');
+  else if(key==='.'){    if(!r.includes('.'))r+=(r===''||r==='-')?'0.':'.';}
+  else { if(r==='0')r=key; else if(r==='-0')r='-'+key; else r+=key; }
+  state.raw=r;
   updateDisplay();
   updateResult();
 }
 
-// ── Обновить только дисплей (без полного ре-рендера) ─────────
-function updateDisplay() {
-  const disp = document.getElementById('display-val');
-  const badge = document.getElementById('display-badge');
-  if(!disp) return;
-  const cat = CATS[state.cat];
-  const unitObj = cat.units.find(u=>u.code===state.unit);
-  if(state.raw === '') {
-    disp.innerHTML = `<span class="display-placeholder">Введите число</span><span class="cursor"></span>`;
+// ── Показать/скрыть +/− в зависимости от категории ──────────
+function updateNegBtn(){
+  const btn=document.getElementById('np-neg');
+  const saveBtn=document.getElementById('np-save');
+  if(!btn)return;
+  if(state.cat==='temp'){
+    btn.style.display='grid';
+    saveBtn.style.display='none';
   } else {
-    disp.innerHTML = `${state.raw}<span class="cursor"></span>`;
+    btn.style.display='none';
+    saveBtn.style.display='grid';
   }
-  if(badge) badge.textContent = unitObj ? unitObj.label : '';
+}
+
+// ── Обновить только дисплей ───────────────────────────────────
+function updateDisplay(){
+  const el=document.getElementById('display-val');
+  const badge=document.getElementById('display-badge');
+  if(!el)return;
+  const unitObj=CATS[state.cat].units.find(u=>u.code===state.unit);
+  if(state.raw===''){
+    el.innerHTML=`<span class="display-placeholder">Введите число</span>`;
+  } else {
+    el.innerHTML=`<span class="num-text">${state.raw}</span>`;
+  }
+  el.innerHTML+=`<span class="cursor"></span>`;
+  if(badge)badge.textContent=unitObj?unitObj.label:'';
 }
 
 // ── Обновить только результат ─────────────────────────────────
-function updateResult() {
-  const res = document.getElementById('result-zone');
-  if(!res) return;
-  const val = parseFloat(state.raw);
-  if(!state.raw || isNaN(val)) {
+function updateResult(){
+  const res=document.getElementById('result-zone');
+  if(!res)return;
+  const val=parseFloat(state.raw);
+  if(!state.raw||isNaN(val)){
     res.classList.remove('visible');
-    res.innerHTML = '';
+    res.innerHTML='';
     return;
   }
-  const cat = CATS[state.cat];
-  if(state.cat === 'temp') {
-    const r = cat.convert(val, state.unit);
-    const cards = ['C','F','K'].map(u => `
+  const cat=CATS[state.cat];
+  if(state.cat==='temp'){
+    const r=cat.convert(val,state.unit);
+    const cards=['C','F','K'].map(u=>`
       <div class="temp-card ${state.unit===u?'highlight':''}">
-        <div class="tc-label">${u==='C'?'°C Цельсий':u==='F'?'°F Фаренгейт':'K Кельвин'}</div>
+        <div class="tc-label">${u==='C'?'°C':u==='F'?'°F':'K'}</div>
         <div class="tc-val">${fmt(r[u])}</div>
       </div>`).join('');
-    res.innerHTML = `
+    res.innerHTML=`
       <div class="temp-grid">${cards}</div>
-      <div class="copy-row">
-        <button class="copy-btn" id="copy-btn" onclick="copyTemp(${fmt(r.C)},${fmt(r.F)},${fmt(r.K)})">
-          ⎘ Скопировать
-        </button>
+      <div class="result-actions" style="margin-top:10px">
+        <button class="ra-btn copy-btn-inline" onclick="copyResultInline()">Скопировать</button>
       </div>`;
   } else {
-    const r = cat.convert(val, state.unit);
-    if(r.mainVal === null) { res.classList.remove('visible'); return; }
-    const extrasHTML = r.extras.length
-      ? `<div class="result-also">${r.extras.map(e=>`<span class="also-chip">${fmt(e.val)} ${e.unit}</span>`).join('')}</div>`
-      : '';
-    res.innerHTML = `
+    const r=cat.convert(val,state.unit);
+    if(r.mainVal===null){res.classList.remove('visible');return;}
+    const extrasHTML=r.extras.length
+      ?`<div class="result-also">${r.extras.map(e=>`<span class="also-chip">${fmt(e.val)} ${e.unit}</span>`).join('')}</div>`:'';
+    res.innerHTML=`
       <div class="result-main">
         ${fmt(val)} ${r.fromUnit}<span class="result-eq">=</span>${fmt(r.mainVal)} ${r.mainUnit}
       </div>
       ${extrasHTML}
-      <div class="copy-row">
-        <button class="copy-btn" id="copy-btn" onclick="copyRes('${fmt(val)} ${r.fromUnit} = ${fmt(r.mainVal)} ${r.mainUnit}')">
-          ⎘ Скопировать
-        </button>
+      <div class="result-actions">
+        <button class="ra-btn copy-btn-inline" onclick="copyResultInline()">Скопировать</button>
+        <button class="ra-btn save-btn" onclick="saveToHistory()">📌 Сохранить</button>
       </div>`;
   }
   res.classList.add('visible');
 }
 
-// ── Копирование ───────────────────────────────────────────────
-function copyRes(text) {
-  navigator.clipboard?.writeText(text).then(() => flashCopy());
-}
-function copyTemp(C,F,K) {
-  navigator.clipboard?.writeText(`${C} °C = ${F} °F = ${K} K`).then(() => flashCopy());
-}
-function flashCopy() {
-  const btn = document.getElementById('copy-btn');
-  if(btn){ btn.classList.add('copied'); btn.textContent='✓ Скопировано'; }
+function copyResultInline(){
+  const text=currentResultText();
+  if(!text)return;
+  navigator.clipboard?.writeText(text).then(()=>showToast('Скопировано ✓'));
   tg?.HapticFeedback?.notificationOccurred?.('success');
-  setTimeout(()=>{ if(btn){ btn.classList.remove('copied'); btn.textContent='⎘ Скопировать'; } }, 1800);
 }
 
-// ── Полный рендер панели (только при смене таба/единицы) ──────
-function render() {
-  const panel = document.getElementById('panel');
-  const cat = CATS[state.cat];
-  const unitsHTML = cat.units.map(u => `
+// ── Полный рендер (только при смене таба/единицы) ─────────────
+function render(){
+  const panel=document.getElementById('panel');
+  const cat=CATS[state.cat];
+  const unitsHTML=cat.units.map(u=>`
     <button class="unit-btn ${state.unit===u.code?'selected':''}" onclick="selectUnit('${u.code}')">
       <span class="code">${u.label}</span>
       <span class="name">${u.name}</span>
     </button>`).join('');
-
-  panel.innerHTML = `<div class="tab-panel">
-    <div class="display" id="display">
-      <div class="display-input" id="display-val"></div>
-      <span id="display-badge" class="unit-badge" style="display:none"></span>
-      <div class="result-inline" id="result-zone"></div>
+  panel.innerHTML=`<div class="tab-panel">
+    <div class="display">
+      <div class="display-top">
+        <div class="display-number" id="display-val"></div>
+        <span class="unit-badge" id="display-badge"></span>
+      </div>
+      <div class="result-zone" id="result-zone"></div>
     </div>
     <div class="units-label">Единица измерения</div>
     <div class="units-grid">${unitsHTML}</div>
+    <div class="history-section" id="history-section"></div>
   </div>`;
-
-  // Показываем badge внутри display-input
-  const badge = document.getElementById('display-badge');
-  const dispVal = document.getElementById('display-val');
-  if(badge && dispVal) {
-    // Переносим badge внутрь display-val
-    badge.style.display = 'inline';
-    dispVal.appendChild(badge);
-  }
-
+  updateNegBtn();
   updateDisplay();
   updateResult();
+  renderHistory();
 }
 
-// ── Выбор единицы ─────────────────────────────────────────────
-function selectUnit(code) {
-  state.unit = code;
-  // Обновляем только классы кнопок
-  document.querySelectorAll('.unit-btn').forEach(btn => {
-    const bc = btn.querySelector('.code');
-    const cat = CATS[state.cat];
-    const u = cat.units.find(u => u.label === bc?.textContent);
-    if(u) btn.classList.toggle('selected', u.code === code);
+function selectUnit(code){
+  state.unit=code;
+  document.querySelectorAll('.unit-btn').forEach(btn=>{
+    const lbl=btn.querySelector('.code')?.textContent;
+    const u=CATS[state.cat].units.find(u=>u.label===lbl);
+    if(u)btn.classList.toggle('selected',u.code===code);
   });
   updateDisplay();
   updateResult();
   tg?.HapticFeedback?.selectionChanged?.();
 }
 
-// ── Смена категории ───────────────────────────────────────────
-function selectCat(cat) {
-  state.cat = cat;
-  state.unit = DEF[cat];
-  state.raw = '';
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.cat===cat));
+function selectCat(cat){
+  state.cat=cat;
+  state.unit=DEF[cat];
+  state.raw='';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===cat));
   render();
   tg?.HapticFeedback?.selectionChanged?.();
 }
 
-// ── Нумпад события ────────────────────────────────────────────
-document.getElementById('tabs').addEventListener('click', e => {
-  const btn = e.target.closest('.tab');
-  if(btn) selectCat(btn.dataset.cat);
+// ── События ───────────────────────────────────────────────────
+document.getElementById('tabs').addEventListener('click',e=>{
+  const btn=e.target.closest('.tab');
+  if(btn)selectCat(btn.dataset.cat);
 });
 
-document.querySelector('.numpad-grid').addEventListener('click', e => {
-  const btn = e.target.closest('.np-btn');
-  if(!btn) return;
-  if(btn.id==='np-back')  numpadPress('back');
+document.getElementById('numpad-grid').addEventListener('click',e=>{
+  const btn=e.target.closest('.np-btn');
+  if(!btn)return;
+  if(btn.id==='np-back')       numpadPress('back');
   else if(btn.id==='np-clear') numpadPress('clear');
   else if(btn.id==='np-neg')   numpadPress('neg');
-  else if(btn.id==='np-copy')  document.getElementById('copy-btn')?.click();
+  else if(btn.id==='np-save')  saveToHistory();
+  else if(btn.id==='np-copy'){
+    const text=currentResultText();
+    if(text)navigator.clipboard?.writeText(text).then(()=>showToast('Скопировано ✓'));
+    tg?.HapticFeedback?.notificationOccurred?.('success');
+  }
   else if(btn.dataset.val)     numpadPress(btn.dataset.val);
 });
 
