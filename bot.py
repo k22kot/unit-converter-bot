@@ -39,7 +39,16 @@ MINI_APP_URL = os.environ.get("MINI_APP_URL", "")
 # ─── Клавиатуры ───────────────────────────────────────────────────────────────
 
 def main_keyboard() -> InlineKeyboardMarkup:
-    rows = [
+    rows = []
+    # Кнопка Mini App — первой и на всю ширину, только если URL задан
+    if MINI_APP_URL:
+        rows.append([
+            InlineKeyboardButton(
+                "🚀 Открыть конвертер",
+                web_app=WebAppInfo(url=MINI_APP_URL),
+            )
+        ])
+    rows += [
         [
             InlineKeyboardButton("📏 Расстояние",  callback_data="cat:distance"),
             InlineKeyboardButton("⚖️ Вес",         callback_data="cat:weight"),
@@ -48,16 +57,8 @@ def main_keyboard() -> InlineKeyboardMarkup:
             InlineKeyboardButton("🌡 Температура", callback_data="cat:temperature"),
             InlineKeyboardButton("🧴 Объём",       callback_data="cat:volume"),
         ],
+        [InlineKeyboardButton("❓ Помощь", callback_data="help")],
     ]
-    # Кнопка открытия Mini App — показываем только если URL задан
-    if MINI_APP_URL:
-        rows.append([
-            InlineKeyboardButton(
-                "🚀 Открыть приложение",
-                web_app=WebAppInfo(url=MINI_APP_URL),
-            )
-        ])
-    rows.append([InlineKeyboardButton("❓ Помощь", callback_data="help")])
     return InlineKeyboardMarkup(rows)
 
 
